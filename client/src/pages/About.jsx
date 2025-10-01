@@ -60,18 +60,24 @@ const About = () => {
 
         <section className="card" style={{ background: '#fff' }}>
           <h3>Legalitas Perusahaan</h3>
-          {profile?.legalDocument ? (
-            <div style={{ display: 'grid', gap: '0.5rem' }}>
+          {Array.isArray(profile?.legalDocument) && profile.legalDocument.length > 0 ? (
+            <div style={{ display: 'grid', gap: '0.75rem' }}>
               <p>Dokumen legalitas resmi kami tersedia untuk diunduh.</p>
-              <a
-                href={profile.legalDocument}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="primary-button"
-                style={{ justifySelf: 'flex-start' }}
-              >
-                Lihat Dokumen Legalitas
-              </a>
+              <ul style={{ display: 'grid', gap: '0.5rem', paddingLeft: '1.25rem', margin: 0 }}>
+                {profile.legalDocument.map((documentUrl, index) => (
+                  <li key={documentUrl}>
+                    <a
+                      href={documentUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="primary-button"
+                      style={{ justifySelf: 'flex-start' }}
+                    >
+                      Dokumen Legalitas {index + 1}
+                    </a>
+                  </li>
+                ))}
+              </ul>
             </div>
           ) : (
             <p>Informasi legalitas perusahaan akan segera tersedia.</p>
