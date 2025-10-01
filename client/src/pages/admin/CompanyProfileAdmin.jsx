@@ -1,23 +1,24 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 
+const INITIAL_PROFILE = {
+  companyName: '',
+  about: '',
+  vision: '',
+  mission: '',
+  address: '',
+  phone: '',
+  email: '',
+  yearFounded: '',
+  certifications: ''
+};
+
 const CompanyProfileAdmin = ({ token }) => {
-  const [profile, setProfile] = useState({
-    companyName: '',
-    about: '',
-    vision: '',
-    mission: '',
-    address: '',
-    phone: '',
-    email: '',
-    yearFounded: '',
-    certifications: '',
-    legalDocument: ''
-  });
+  const [profile, setProfile] = useState({ ... INITIAL_PROFILE });
   const [heroImage, setHeroImage] = useState(null);
-  const [legalDocumentFile, setLegalDocumentFile] = useState(null);
+  const [legalDocuments, setLegalDocuments] = useState([]);
+  const [legalDocumentFiles, setLegalDocumentFiles] = useState([]);
   const [currentHeroImage, setCurrentHeroImage] = useState('');
-  const [currentLegalDocument, setCurrentLegalDocument] = useState('');
   const [status, setStatus] = useState(null);
   const fileInputRef = useRef(null);
   const legalFileInputRef = useRef(null);
@@ -35,20 +36,29 @@ const CompanyProfileAdmin = ({ token }) => {
           phone: data[0].phone || '',
           email: data[0].email || '',
           yearFounded: data[0].yearFounded || '',
-          certifications: data[0].certifications || '',
-          legalDocument: data[0].legalDocument || ''
+          certifications: data[0].certifications || ''
         });
         setCurrentHeroImage(data[0].heroImage || '');
-        setCurrentLegalDocument(data[0].legalDocument || '');
-        setHeroImage(null);
-        setLegalDocumentFile(null);
-        setStatus(null);
-        if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-        }
-        if (legalFileInputRef.current) {
-          legalFileInputRef.current.value = '';
-        }
+        setLegalDocuments(
+          Array.isArray(data[0].legalDocument)
+            ? data[0].legalDocument
+            : data[0].legalDocument
+            ? [data[0].legalDocument]
+            : []
+        );
+      } else {
+        setProfile({ ... INITIAL_PROFILE });
+        setCurrentHeroImage('');
+        setLegalDocuments([]);
+      }
+      setHeroImage(null);
+      setLegalDocumentFiles([]);
+      setStatus(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      if (legalFileInputRef.current) {
+        legalFileInputRef.current.value = '';
       }
     } catch (error) {
       console.error('Failed to fetch profile', error);
@@ -73,9 +83,10 @@ const CompanyProfileAdmin = ({ token }) => {
       if (heroImage) {
         formData.append('heroImage', heroImage);
       }
-      if (legalDocumentFile) {
-        formData.append('legalDocument', legalDocumentFile);
-      }
+      formData.append('existingLegalDocuments', JSON.stringify(legalDocuments));
+      legalDocumentFiles.forEach((file) => {
+        formData.append('legalDocuments', file);
+      });
 
       const config = {
         headers: {
@@ -164,20 +175,40 @@ const CompanyProfileAdmin = ({ token }) => {
           <label>Dokumen Legalitas Perusahaan</label>
           <input
             ref={legalFileInputRef}
-            name="legalDocument"
+            name="legalDocuments"
             type="file"
             accept="image/*,application/pdf"
-            onChange={(e) => setLegalDocumentFile(e.target.files[0])}
+            multiple
+            onChange={(e) => setLegalDocumentFiles(Array.from(e.target.files))}
           />
           <small style={{ color: '#6b7280' }}>
             Unggah dokumen legalitas perusahaan (contoh: SIUP, NIB) dalam bentuk gambar atau PDF.
           </small>
-          {currentLegalDocument && (
-            <p style={{ marginTop: '0.75rem' }}>
-              <a href={currentLegalDocument} target="_blank" rel="noopener noreferrer">
-                Lihat dokumen legalitas saat ini
-              </a>
-            </p>
+          {legalDocuments.length > 0 && (
+            <ul style={{ marginTop: '0.75rem', paddingLeft: '1.25rem' }}>
+              {legalDocuments.map((doc, index) => (
+                <li key={doc} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <a href={doc} target="_blank" rel="noopener noreferrer">
+                    Dokumen {index + 1}
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setLegalDocuments((prev) => prev.filter((_, itemIndex) => itemIndex !== index))
+                    }
+                    style={{
+                      background: 'transparent',
+                      border: 'none',
+                      color: '#dc2626',
+                      cursor: 'pointer',
+                      padding: 0
+                    }}
+                  >
+                    Hapus
+                  </button>
+                </li>
+              ))}
+            </ul>
           )}
         </div>
         <button className="primary-button" type="submit">

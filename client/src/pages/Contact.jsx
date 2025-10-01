@@ -1,10 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchProfile = async () => {
+      try {
+        const { data } = await axios.get('/api/company-profiles');
+        if (isMounted && Array.isArray(data) && data.length > 0) {
+          setProfile(data[0]);
+        }
+      } catch (error) {
+        console.error('Failed to load company profile for contact page', error);
+      }
+    };
+
+    fetchProfile();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -39,9 +61,9 @@ const Contact = () => {
           </p>
           <div className="card" style={{ marginTop: '2rem' }}>
             <h3>Informasi Kontak</h3>
-            <p>Alamat: Jl. Contoh No. 123, Jakarta</p>
-            <p>Telepon: +62 812-3456-7890</p>
-            <p>Email: info@jayakencana.co.id</p>
+            <p>Alamat: {profile?.address || 'Informasi alamat belum tersedia.'}</p>
+            <p>Telepon: {profile?.phone || 'Informasi telepon belum tersedia.'}</p>
+            <p>Email: {profile?.email || 'Informasi email belum tersedia.'}</p>
           </div>
         </div>
 

@@ -30,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage });
 const uploadFields = upload.fields([
   { name: 'heroImage', maxCount: 1 },
-  { name: 'legalDocument', maxCount: 1 }
+  { name: 'legalDocuments', maxCount: 10 }
 ]);
 
 router.get('/', getProfiles);

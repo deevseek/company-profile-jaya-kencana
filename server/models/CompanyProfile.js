@@ -48,8 +48,41 @@ const CompanyProfile = sequelize.define('CompanyProfile', {
     allowNull: true
   },
   legalDocument: {
-    type: DataTypes.STRING,
-    allowNull: true
+    type: DataTypes.TEXT,
+    allowNull: true,
+    get() {
+      const rawValue = this.getDataValue('legalDocument');
+      if (!rawValue) {
+        return [];
+      }
+
+      if (Array.isArray(rawValue)) {
+        return rawValue;
+      }
+
+      try {
+        const parsed = JSON.parse(rawValue);
+        if (Array.isArray(parsed)) {
+          return parsed;
+        }
+        return parsed ? [parsed] : [];
+      } catch (error) {
+        return [rawValue];
+      }
+    },
+    set(value) {
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        this.setDataValue('legalDocument', null);
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        this.setDataValue('legalDocument', JSON.stringify(value));
+        return;
+      }
+
+      this.setDataValue('legalDocument', JSON.stringify([value]));
+    }
   }
 });
 
