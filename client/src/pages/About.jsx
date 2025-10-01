@@ -57,6 +57,26 @@ const About = () => {
           <h3>Sertifikasi & Pengakuan</h3>
           <p>{profile?.certifications || 'ISO 9001, ISO 14001, OHSAS 18001'}</p>
         </section>
+
+        <section className="card" style={{ background: '#fff' }}>
+          <h3>Legalitas Perusahaan</h3>
+          {profile?.legalDocument ? (
+            <div style={{ display: 'grid', gap: '0.5rem' }}>
+              <p>Dokumen legalitas resmi kami tersedia untuk diunduh.</p>
+              <a
+                href={profile.legalDocument}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="primary-button"
+                style={{ justifySelf: 'flex-start' }}
+              >
+                Lihat Dokumen Legalitas
+              </a>
+            </div>
+          ) : (
+            <p>Informasi legalitas perusahaan akan segera tersedia.</p>
+          )}
+        </section>
       </div>
     </main>
   );

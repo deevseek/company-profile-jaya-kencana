@@ -85,7 +85,8 @@ const bootstrap = async () => {
         phone: '+62 812-3456-7890',
         email: 'info@jayakencana.co.id',
         yearFounded: 2001,
-        certifications: 'ISO 9001, ISO 14001'
+        certifications: 'ISO 9001, ISO 14001',
+        legalDocument: null
       });
       console.log('Default company profile created');
     }

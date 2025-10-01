@@ -11,12 +11,16 @@ const CompanyProfileAdmin = ({ token }) => {
     phone: '',
     email: '',
     yearFounded: '',
-    certifications: ''
+    certifications: '',
+    legalDocument: ''
   });
   const [heroImage, setHeroImage] = useState(null);
+  const [legalDocumentFile, setLegalDocumentFile] = useState(null);
   const [currentHeroImage, setCurrentHeroImage] = useState('');
+  const [currentLegalDocument, setCurrentLegalDocument] = useState('');
   const [status, setStatus] = useState(null);
   const fileInputRef = useRef(null);
+  const legalFileInputRef = useRef(null);
 
   const loadProfile = async () => {
     try {
@@ -31,13 +35,19 @@ const CompanyProfileAdmin = ({ token }) => {
           phone: data[0].phone || '',
           email: data[0].email || '',
           yearFounded: data[0].yearFounded || '',
-          certifications: data[0].certifications || ''
+          certifications: data[0].certifications || '',
+          legalDocument: data[0].legalDocument || ''
         });
         setCurrentHeroImage(data[0].heroImage || '');
+        setCurrentLegalDocument(data[0].legalDocument || '');
         setHeroImage(null);
+        setLegalDocumentFile(null);
         setStatus(null);
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
+        }
+        if (legalFileInputRef.current) {
+          legalFileInputRef.current.value = '';
         }
       }
     } catch (error) {
@@ -62,6 +72,9 @@ const CompanyProfileAdmin = ({ token }) => {
       Object.entries(profile).forEach(([key, value]) => formData.append(key, value));
       if (heroImage) {
         formData.append('heroImage', heroImage);
+      }
+      if (legalDocumentFile) {
+        formData.append('legalDocument', legalDocumentFile);
       }
 
       const config = {
@@ -146,6 +159,26 @@ const CompanyProfileAdmin = ({ token }) => {
             onChange={(e) => setHeroImage(e.target.files[0])}
           />
           <small style={{ color: '#6b7280' }}>Format rekomendasi: PNG dengan latar belakang transparan.</small>
+        </div>
+        <div>
+          <label>Dokumen Legalitas Perusahaan</label>
+          <input
+            ref={legalFileInputRef}
+            name="legalDocument"
+            type="file"
+            accept="image/*,application/pdf"
+            onChange={(e) => setLegalDocumentFile(e.target.files[0])}
+          />
+          <small style={{ color: '#6b7280' }}>
+            Unggah dokumen legalitas perusahaan (contoh: SIUP, NIB) dalam bentuk gambar atau PDF.
+          </small>
+          {currentLegalDocument && (
+            <p style={{ marginTop: '0.75rem' }}>
+              <a href={currentLegalDocument} target="_blank" rel="noopener noreferrer">
+                Lihat dokumen legalitas saat ini
+              </a>
+            </p>
+          )}
         </div>
         <button className="primary-button" type="submit">
           Simpan

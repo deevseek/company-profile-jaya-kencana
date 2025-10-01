@@ -46,6 +46,10 @@ const CompanyProfile = sequelize.define('CompanyProfile', {
   heroImage: {
     type: DataTypes.STRING,
     allowNull: true
+  },
+  legalDocument: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
