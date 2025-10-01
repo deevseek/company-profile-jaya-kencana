@@ -1,0 +1,79 @@
+import { useState } from 'react';
+import axios from 'axios';
+
+const Contact = () => {
+  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const [status, setStatus] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setStatus(null);
+    try {
+      await axios.post('/api/messages', form);
+      setStatus({ type: 'success', message: 'Pesan berhasil dikirim. Kami akan menghubungi Anda segera.' });
+      setForm({ name: '', email: '', subject: '', message: '' });
+    } catch (error) {
+      setStatus({ type: 'error', message: 'Terjadi kesalahan. Silakan coba lagi.' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <main className="section">
+      <div className="container" style={{ display: 'grid', gap: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+        <div>
+          <h1 className="section-title" style={{ textAlign: 'left' }}>
+            Hubungi Kami
+          </h1>
+          <p style={{ lineHeight: 1.7 }}>
+            Kami siap membantu kebutuhan proyek Anda. Silakan isi formulir berikut atau hubungi kami melalui informasi kontak
+            yang tersedia.
+          </p>
+          <div className="card" style={{ marginTop: '2rem' }}>
+            <h3>Informasi Kontak</h3>
+            <p>Alamat: Jl. Contoh No. 123, Jakarta</p>
+            <p>Telepon: +62 812-3456-7890</p>
+            <p>Email: info@jayakencana.co.id</p>
+          </div>
+        </div>
+
+        <div className="card" style={{ background: '#fff' }}>
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label htmlFor="name">Nama Lengkap</label>
+              <input id="name" name="name" value={form.name} onChange={handleChange} required />
+            </div>
+            <div>
+              <label htmlFor="email">Email</label>
+              <input id="email" name="email" type="email" value={form.email} onChange={handleChange} required />
+            </div>
+            <div>
+              <label htmlFor="subject">Subjek</label>
+              <input id="subject" name="subject" value={form.subject} onChange={handleChange} />
+            </div>
+            <div>
+              <label htmlFor="message">Pesan</label>
+              <textarea id="message" name="message" rows="5" value={form.message} onChange={handleChange} required />
+            </div>
+            <button className="primary-button" type="submit" disabled={loading}>
+              {loading ? 'Mengirim...' : 'Kirim Pesan'}
+            </button>
+            {status && (
+              <p style={{ color: status.type === 'success' ? '#15803d' : '#dc2626' }}>{status.message}</p>
+            )}
+          </form>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+export default Contact;
