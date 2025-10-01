@@ -63,12 +63,24 @@ const ensureCompanyProfileSchema = async () => {
   const queryInterface = sequelize.getQueryInterface();
   const tableDescription = await queryInterface.describeTable('CompanyProfiles');
 
-  if (!tableDescription.legalDocument) {
+  const shouldAddColumn = !tableDescription.legalDocument;
+  const shouldUpdateColumn =
+    tableDescription.legalDocument &&
+    typeof tableDescription.legalDocument.type === 'string' &&
+    tableDescription.legalDocument.type.toLowerCase().includes('varchar');
+
+  if (shouldAddColumn) {
     await queryInterface.addColumn('CompanyProfiles', 'legalDocument', {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       allowNull: true
     });
     console.log('Added legalDocument column to CompanyProfiles table');
+  } else if (shouldUpdateColumn) {
+    await queryInterface.changeColumn('CompanyProfiles', 'legalDocument', {
+      type: DataTypes.TEXT,
+      allowNull: true
+    });
+    console.log('Updated legalDocument column type to TEXT');
   }
 };
 
