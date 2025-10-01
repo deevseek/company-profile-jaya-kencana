@@ -4,6 +4,7 @@ const helmet = require('helmet');
 const path = require('path');
 const fs = require('fs');
 const bcrypt = require('bcrypt');
+const { DataTypes } = require('sequelize');
 require('dotenv').config();
 
 const { sequelize, User, CompanyProfile } = require('./models');
@@ -58,9 +59,23 @@ if (fs.existsSync(clientBuildPath)) {
   });
 }
 
+const ensureCompanyProfileSchema = async () => {
+  const queryInterface = sequelize.getQueryInterface();
+  const tableDescription = await queryInterface.describeTable('CompanyProfiles');
+
+  if (!tableDescription.legalDocument) {
+    await queryInterface.addColumn('CompanyProfiles', 'legalDocument', {
+      type: DataTypes.STRING,
+      allowNull: true
+    });
+    console.log('Added legalDocument column to CompanyProfiles table');
+  }
+};
+
 const bootstrap = async () => {
   try {
     await sequelize.sync();
+    await ensureCompanyProfileSchema();
 
     const adminExists = await User.findOne({ where: { email: 'admin@jayakencana.co.id' } });
     if (!adminExists) {
