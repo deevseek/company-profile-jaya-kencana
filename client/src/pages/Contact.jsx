@@ -1,11 +1,25 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const buildWhatsAppLink = (rawPhone) => {
+  if (!rawPhone) {
+    return null;
+  }
+
+  const digitsOnly = rawPhone.replace(/\D/g, '');
+  if (!digitsOnly) {
+    return null;
+  }
+
+  return `https://wa.me/${digitsOnly}`;
+};
+
 const Contact = () => {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [profile, setProfile] = useState(null);
+  const whatsappLink = buildWhatsAppLink(profile?.phone);
 
   useEffect(() => {
     let isMounted = true;
@@ -64,6 +78,19 @@ const Contact = () => {
             <p>Alamat: {profile?.address || 'Informasi alamat belum tersedia.'}</p>
             <p>Telepon: {profile?.phone || 'Informasi telepon belum tersedia.'}</p>
             <p>Email: {profile?.email || 'Informasi email belum tersedia.'}</p>
+            {whatsappLink ? (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="primary-button"
+                style={{ display: 'inline-block', marginTop: '1rem' }}
+              >
+                Hubungi via WhatsApp
+              </a>
+            ) : (
+              <p>WhatsApp: Informasi nomor WhatsApp belum tersedia.</p>
+            )}
           </div>
         </div>
 
