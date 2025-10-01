@@ -22,33 +22,44 @@ const Home = () => {
 
   return (
     <main>
-      <section className="hero section" style={{ paddingTop: '6rem', background: '#0f172a' }}>
-        <div className="container" style={{ color: '#e2e8f0', display: 'grid', gap: '2rem', alignItems: 'center', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
-          <div>
-            <h1 style={{ fontSize: '3rem', marginBottom: '1.5rem', color: '#fff' }}>
-              Solusi Profesional untuk Proyek Konstruksi Anda
-            </h1>
-            <p style={{ fontSize: '1.1rem', lineHeight: 1.8 }}>
+      <section className="hero section hero--home">
+        <div className="container hero__grid">
+          <div className="hero__content">
+            <span className="hero__eyebrow">{profile?.companyName || 'CV. Jaya Kencana'}</span>
+            <h1>Solusi Profesional untuk Proyek Konstruksi Anda</h1>
+            <p>
               {profile?.about ||
                 'CV. Jaya Kencana menghadirkan layanan konstruksi dan pengadaan industri dengan mengutamakan kualitas, keamanan, dan inovasi.'}
             </p>
-            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+            <div className="hero__cta">
               <Link to="/contact" className="primary-button">
                 Konsultasi Gratis
               </Link>
-              <Link to="/portfolio" className="primary-button" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(148, 163, 184, 0.4)' }}>
+              <Link to="/portfolio" className="primary-button hero__cta-secondary">
                 Lihat Portofolio
               </Link>
             </div>
+            <div className="hero__meta">
+              <span>Didukung oleh tim ahli sejak {profile?.yearFounded || '2001'}</span>
+              <span>Respon cepat & pendampingan penuh</span>
+            </div>
           </div>
-          <div style={{ background: 'linear-gradient(135deg, rgba(59,130,246,0.2), rgba(14,165,233,0.2))', borderRadius: '20px', padding: '2rem' }}>
-            <h3 style={{ color: '#bae6fd' }}>Mengapa Memilih Kami?</h3>
-            <ul style={{ listStyle: 'none', padding: 0, marginTop: '1rem', display: 'grid', gap: '1rem' }}>
-              <li>✅ Tim profesional berpengalaman</li>
-              <li>✅ Standar keamanan dan kualitas tinggi</li>
-              <li>✅ Dukungan end-to-end untuk setiap proyek</li>
-              <li>✅ Jaringan supplier industri yang luas</li>
-            </ul>
+          <div className="hero__visual">
+            {profile?.heroImage && (
+              <div className="hero__logo-card">
+                <img src={profile.heroImage} alt="Logo CV. Jaya Kencana" />
+                <p>Logo resmi perusahaan</p>
+              </div>
+            )}
+            <div className="hero__highlights">
+              <h3>Mengapa Memilih Kami?</h3>
+              <ul>
+                <li>✅ Tim profesional berpengalaman</li>
+                <li>✅ Standar keamanan dan kualitas tinggi</li>
+                <li>✅ Dukungan end-to-end untuk setiap proyek</li>
+                <li>✅ Jaringan supplier industri yang luas</li>
+              </ul>
+            </div>
           </div>
         </div>
       </section>

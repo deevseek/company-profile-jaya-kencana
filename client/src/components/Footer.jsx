@@ -1,5 +1,3 @@
-import { Link } from 'react-router-dom';
-
 const Footer = () => {
   return (
     <footer className="footer">
@@ -25,15 +23,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="footer__bottom">
-          <p>
-            &copy; {new Date().getFullYear()} CV. Jaya Kencana. All rights reserved.
-            <span className="footer__admin">
-              Admin?
-              <Link to="/admin" className="footer__admin-link">
-                Masuk di sini
-              </Link>
-            </span>
-          </p>
+          <p>&copy; {new Date().getFullYear()} CV. Jaya Kencana. All rights reserved.</p>
         </div>
       </div>
     </footer>
