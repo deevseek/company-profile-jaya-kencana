@@ -29,16 +29,34 @@ if (!fs.existsSync(uploadsPath)) {
 }
 app.use('/uploads', express.static(uploadsPath));
 
-app.get('/', (req, res) => {
-  res.json({ message: 'CV. Jaya Kencana API' });
-});
-
 app.use('/api/auth', authRoutes);
 app.use('/api/company-profiles', companyProfileRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/gallery', galleryRoutes);
 app.use('/api/messages', messageRoutes);
+
+app.get('/api', (req, res) => {
+  res.json({ message: 'CV. Jaya Kencana API' });
+});
+
+const clientBuildPath = path.join(__dirname, '..', 'client', 'dist');
+
+if (fs.existsSync(clientBuildPath)) {
+  app.use(express.static(clientBuildPath));
+
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.json({ message: 'CV. Jaya Kencana API' });
+  });
+}
 
 const bootstrap = async () => {
   try {
