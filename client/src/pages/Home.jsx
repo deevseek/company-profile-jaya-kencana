@@ -43,6 +43,41 @@ const Home = () => {
               <span>Didukung oleh tim ahli sejak {profile?.yearFounded || '2001'}</span>
               <span>Respon cepat & pendampingan penuh</span>
             </div>
+            {(profile?.phone || profile?.email || profile?.address) && (
+              <div className="hero__contact-card">
+                <span className="hero__contact-heading">Butuh bantuan cepat?</span>
+                <p>Hubungi tim kami secara langsung melalui:</p>
+                <div className="hero__contact-list">
+                  {profile?.phone && (
+                    <a
+                      href={`tel:${profile.phone.replace(/[^+\d]/g, '')}`}
+                      className="hero__contact-item"
+                    >
+                      <span role="img" aria-hidden="true">
+                        📞
+                      </span>
+                      <span>{profile.phone}</span>
+                    </a>
+                  )}
+                  {profile?.email && (
+                    <a href={`mailto:${profile.email}`} className="hero__contact-item">
+                      <span role="img" aria-hidden="true">
+                        ✉️
+                      </span>
+                      <span>{profile.email}</span>
+                    </a>
+                  )}
+                  {profile?.address && (
+                    <div className="hero__contact-item hero__contact-item--static">
+                      <span role="img" aria-hidden="true">
+                        📍
+                      </span>
+                      <span>{profile.address}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
           <div className="hero__visual">
             {profile?.heroImage && (

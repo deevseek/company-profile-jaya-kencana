@@ -80,11 +80,62 @@
   color: #fff;
 }
 
-@media (max-width: 768px) {
-  .navbar__links {
-    display: none;
-  }
+.navbar__menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  flex-direction: column;
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: none;
+  background: rgba(15, 23, 42, 0.06);
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
 
+.navbar__menu-toggle span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #0f172a;
+  border-radius: 999px;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.navbar__menu-toggle:hover {
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.navbar__menu-toggle.is-open {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+.navbar__menu-toggle.is-open span:nth-child(1) {
+  transform: translateY(6px) rotate(45deg);
+}
+
+.navbar__menu-toggle.is-open span:nth-child(2) {
+  opacity: 0;
+}
+
+.navbar__menu-toggle.is-open span:nth-child(3) {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+.navbar__links--mobile {
+  display: none;
+}
+
+.navbar__backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 40;
+}
+
+@media (max-width: 768px) {
   .navbar__brand {
     gap: 0.5rem;
   }
@@ -95,5 +146,53 @@
 
   .navbar__brand-tagline {
     display: none;
+  }
+
+  .navbar__menu-toggle {
+    display: inline-flex;
+  }
+
+  .navbar__links {
+    display: none;
+  }
+
+  .navbar__links--mobile {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    top: calc(64px + 0.75rem);
+    display: grid;
+    gap: 0.5rem;
+    padding: 1.25rem;
+    border-radius: 20px;
+    background: #ffffff;
+    box-shadow: 0 32px 48px rgba(15, 23, 42, 0.18);
+    border: 1px solid rgba(226, 232, 240, 0.9);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-12px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    z-index: 50;
+    pointer-events: none;
+  }
+
+  .navbar__links--mobile a {
+    padding: 0.85rem 1rem;
+    border-radius: 14px;
+    background: rgba(248, 250, 252, 0.95);
+    color: #0f172a;
+  }
+
+  .navbar__links--mobile a.active,
+  .navbar__links--mobile a:hover {
+    background: linear-gradient(135deg, #2563eb, #38bdf8);
+    color: #fff;
+  }
+
+  .navbar__links--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
   }
 }
