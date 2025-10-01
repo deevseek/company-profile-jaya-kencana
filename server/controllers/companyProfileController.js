@@ -23,12 +23,29 @@ exports.getProfile = async (req, res) => {
   }
 };
 
+const getUploadedFilePath = (files, fieldName) => {
+  if (!files || !files[fieldName] || files[fieldName].length === 0) {
+    return null;
+  }
+
+  return `/uploads/${files[fieldName][0].filename}`;
+};
+
 exports.createProfile = async (req, res) => {
   try {
-    const data = req.body;
-    if (req.file) {
-      data.heroImage = `/uploads/${req.file.filename}`;
+    const data = { ...req.body };
+
+    const heroImagePath = getUploadedFilePath(req.files, 'heroImage');
+    const legalDocumentPath = getUploadedFilePath(req.files, 'legalDocument');
+
+    if (heroImagePath) {
+      data.heroImage = heroImagePath;
     }
+
+    if (legalDocumentPath) {
+      data.legalDocument = legalDocumentPath;
+    }
+
     const profile = await CompanyProfile.create(data);
     res.status(201).json(profile);
   } catch (error) {
@@ -44,9 +61,17 @@ exports.updateProfile = async (req, res) => {
       return res.status(404).json({ message: 'Profile not found' });
     }
 
-    const data = req.body;
-    if (req.file) {
-      data.heroImage = `/uploads/${req.file.filename}`;
+    const data = { ...req.body };
+
+    const heroImagePath = getUploadedFilePath(req.files, 'heroImage');
+    const legalDocumentPath = getUploadedFilePath(req.files, 'legalDocument');
+
+    if (heroImagePath) {
+      data.heroImage = heroImagePath;
+    }
+
+    if (legalDocumentPath) {
+      data.legalDocument = legalDocumentPath;
     }
 
     await profile.update(data);

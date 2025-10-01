@@ -28,11 +28,15 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
+const uploadFields = upload.fields([
+  { name: 'heroImage', maxCount: 1 },
+  { name: 'legalDocument', maxCount: 1 }
+]);
 
 router.get('/', getProfiles);
 router.get('/:id', getProfile);
-router.post('/', authMiddleware, upload.single('heroImage'), createProfile);
-router.put('/:id', authMiddleware, upload.single('heroImage'), updateProfile);
+router.post('/', authMiddleware, uploadFields, createProfile);
+router.put('/:id', authMiddleware, uploadFields, updateProfile);
 router.delete('/:id', authMiddleware, deleteProfile);
 
 module.exports = router;
