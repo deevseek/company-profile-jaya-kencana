@@ -144,3 +144,19 @@ form {
   padding-top: 1.5rem;
   font-size: 0.9rem;
 }
+
+.footer__admin {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.footer__admin-link {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+.footer__admin-link:hover {
+  text-decoration: underline;
+}
