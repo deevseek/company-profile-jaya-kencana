@@ -1,0 +1,49 @@
+.admin-sidebar {
+  background-color: #111827;
+  color: #f9fafb;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.admin-sidebar__header h2 {
+  margin: 0;
+}
+
+.admin-sidebar__header p {
+  margin: 0.5rem 0 0;
+  color: #9ca3af;
+}
+
+.admin-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.admin-sidebar__nav a {
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  color: #e5e7eb;
+  transition: background 0.2s ease;
+}
+
+.admin-sidebar__nav a.active,
+.admin-sidebar__nav a:hover {
+  background: rgba(59, 130, 246, 0.2);
+  color: #fff;
+}
+
+@media (max-width: 960px) {
+  .admin-sidebar {
+    flex-direction: row;
+    overflow-x: auto;
+    gap: 1rem;
+  }
+
+  .admin-sidebar__nav {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
