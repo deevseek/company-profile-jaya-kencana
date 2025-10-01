@@ -64,6 +64,15 @@ const Navbar = () => {
 
   const closeMenu = () => setIsMenuOpen(false);
 
+  const navLinks = [
+    { to: '/', label: 'Beranda', end: true },
+    { to: '/about', label: 'Tentang' },
+    { to: '/products', label: 'Produk' },
+    { to: '/portfolio', label: 'Portofolio' },
+    { to: '/gallery', label: 'Galeri' },
+    { to: '/contact', label: 'Kontak' },
+  ];
+
   return (
     <header className="navbar">
       <div className="navbar__container">
@@ -94,50 +103,25 @@ const Navbar = () => {
           <span />
         </button>
         <nav className="navbar__links">
-          <NavLink to="/" end onClick={closeMenu}>
-            Beranda
-          </NavLink>
-          <NavLink to="/about" onClick={closeMenu}>
-            Tentang
-          </NavLink>
-          <NavLink to="/products" onClick={closeMenu}>
-            Produk
-          </NavLink>
-          <NavLink to="/portfolio" onClick={closeMenu}>
-            Portofolio
-          </NavLink>
-          <NavLink to="/gallery" onClick={closeMenu}>
-            Galeri
-          </NavLink>
-          <NavLink to="/contact" onClick={closeMenu}>
-            Kontak
-          </NavLink>
+          {navLinks.map(({ to, label, end }) => (
+            <NavLink key={to} to={to} end={end} onClick={closeMenu}>
+              {label}
+            </NavLink>
+          ))}
         </nav>
       </div>
-      <nav
-        className={`navbar__links navbar__links--mobile${isMenuOpen ? ' navbar__links--open' : ''}`}
-        aria-hidden={!isMenuOpen}
-      >
-        <NavLink to="/" end onClick={closeMenu}>
-          Beranda
-        </NavLink>
-        <NavLink to="/about" onClick={closeMenu}>
-          Tentang
-        </NavLink>
-        <NavLink to="/products" onClick={closeMenu}>
-          Produk
-        </NavLink>
-        <NavLink to="/portfolio" onClick={closeMenu}>
-          Portofolio
-        </NavLink>
-        <NavLink to="/gallery" onClick={closeMenu}>
-          Galeri
-        </NavLink>
-        <NavLink to="/contact" onClick={closeMenu}>
-          Kontak
-        </NavLink>
-      </nav>
-      {isMenuOpen && <div className="navbar__backdrop" onClick={closeMenu} role="presentation" />}
+      {isMenuOpen && (
+        <>
+          <nav className="navbar__links navbar__links--mobile navbar__links--open">
+            {navLinks.map(({ to, label, end }) => (
+              <NavLink key={to} to={to} end={end} onClick={closeMenu}>
+                {label}
+              </NavLink>
+            ))}
+          </nav>
+          <div className="navbar__backdrop" onClick={closeMenu} role="presentation" />
+        </>
+      )}
     </header>
   );
 };
