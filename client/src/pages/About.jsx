@@ -1,5 +1,82 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
+
+const DEFAULT_ABOUT_CONTENT = {
+  introParagraphs: [
+    'Sejak tahun 2001, CV. Jaya Kencana berkomitmen menghadirkan solusi konstruksi dan pengadaan industri terbaik di Indonesia.'
+  ],
+  serviceHeading: '',
+  serviceDescription: '',
+  services: []
+};
+
+const formatAboutContent = (aboutText) => {
+  if (!aboutText || typeof aboutText !== 'string') {
+    return DEFAULT_ABOUT_CONTENT;
+  }
+
+  const normalized = aboutText.replace(/\r\n/g, '\n').trim();
+
+  const serviceMatch = normalized.match(/Pelayanan kami[^:]*:/i);
+  let introText = normalized;
+  let serviceText = '';
+
+  if (serviceMatch) {
+    introText = normalized.slice(0, serviceMatch.index).trim();
+    serviceText = normalized.slice(serviceMatch.index + serviceMatch[0].length).trim();
+  }
+
+  const introParagraphs = introText
+    .split(/\n+/)
+    .flatMap((block) => block.split(/(?<=\.)\s+(?=[A-Z0-9])/))
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean);
+
+  let services = [];
+  let extraDescription = '';
+
+  if (serviceText) {
+    if (/\d+\./.test(serviceText)) {
+      const enumeratedParts = serviceText.split(/\d+\.\s*/);
+      const cleanedEnumerated = enumeratedParts
+        .map((item) => item.replace(/^[,;\s-]+/, '').trim())
+        .filter(Boolean);
+
+      services = [...cleanedEnumerated];
+    }
+
+    if (services.length === 0) {
+      const splitted = serviceText
+        .split(/(?:\r?\n|,)/)
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      if (splitted.length > 1) {
+        services = splitted;
+      } else if (splitted.length === 1) {
+        extraDescription = splitted[0];
+      }
+    }
+  }
+
+  const serviceHeading = serviceMatch ? 'Pelayanan Kami' : services.length > 0 ? 'Pelayanan Kami' : '';
+  const serviceDescription = serviceMatch
+    ? serviceMatch[0]
+        .replace(/Pelayanan kami\s*,?/i, '')
+        .replace(/berupa:\s*$/i, '')
+        .replace(/:\s*$/, '')
+        .trim()
+    : '';
+
+  const combinedServiceDescription = [serviceDescription, extraDescription].filter(Boolean).join(' ');
+
+  return {
+    introParagraphs: introParagraphs.length > 0 ? introParagraphs : [normalized],
+    serviceHeading,
+    serviceDescription: combinedServiceDescription,
+    services
+  };
+};
 
 const About = () => {
   const [profile, setProfile] = useState(null);
@@ -19,6 +96,8 @@ const About = () => {
     fetchProfile();
   }, []);
 
+  const formattedAbout = useMemo(() => formatAboutContent(profile?.about), [profile?.about]);
+
   return (
     <main className="section">
       <div className="container" style={{ display: 'grid', gap: '3rem' }}>
@@ -26,11 +105,35 @@ const About = () => {
           <h1 className="section-title" style={{ marginBottom: '0.5rem' }}>
             Tentang CV. Jaya Kencana
           </h1>
-          <p style={{ textAlign: 'center', maxWidth: '720px', margin: '0 auto', lineHeight: 1.7 }}>
-            {profile?.about ||
-              'Sejak tahun 2001, CV. Jaya Kencana berkomitmen menghadirkan solusi konstruksi dan pengadaan industri terbaik di Indonesia.'}
-          </p>
+          <div
+            style={{
+              display: 'grid',
+              gap: '1rem',
+              textAlign: 'left',
+              maxWidth: '820px',
+              margin: '0 auto',
+              lineHeight: 1.7
+            }}
+          >
+            {formattedAbout.introParagraphs.map((paragraph, index) => (
+              <p key={index}>{paragraph}</p>
+            ))}
+          </div>
         </header>
+
+        {(formattedAbout.serviceHeading || formattedAbout.serviceDescription || formattedAbout.services.length > 0) && (
+          <section className="card" style={{ background: '#fff', display: 'grid', gap: '1.25rem' }}>
+            {formattedAbout.serviceHeading && <h3>{formattedAbout.serviceHeading}</h3>}
+            {formattedAbout.serviceDescription && <p style={{ lineHeight: 1.7 }}>{formattedAbout.serviceDescription}</p>}
+            {formattedAbout.services.length > 0 && (
+              <ul style={{ display: 'grid', gap: '0.5rem', paddingLeft: '1.25rem', margin: 0, lineHeight: 1.7 }}>
+                {formattedAbout.services.map((service) => (
+                  <li key={service}>{service.replace(/\.$/, '')}</li>
+                ))}
+              </ul>
+            )}
+          </section>
+        )}
 
         <section style={{ display: 'grid', gap: '2rem', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
           <div className="card" style={{ background: '#1d4ed8', color: '#fff' }}>
