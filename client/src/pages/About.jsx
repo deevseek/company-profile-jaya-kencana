@@ -10,6 +10,59 @@ const DEFAULT_ABOUT_CONTENT = {
   services: []
 };
 
+const sanitizeListItem = (text) =>
+  text
+    .replace(/^[\s•\u2022\-]+/, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+const extractRepeatedKeywordItems = (text) => {
+  if (!text) {
+    return [];
+  }
+
+  const wordMatches = text.match(/\b([A-ZÀ-ÖØ-Ý][A-Za-zÀ-ÖØ-öø-ÿ0-9/&-]{2,})\b/g);
+  if (!wordMatches) {
+    return [];
+  }
+
+  const frequencyMap = wordMatches.reduce((acc, word) => {
+    const normalized = word.toLowerCase();
+    acc[normalized] = (acc[normalized] || 0) + 1;
+    return acc;
+  }, {});
+
+  const repeatedEntry = Object.entries(frequencyMap)
+    .filter(([keyword, count]) => count >= 3 && keyword.length > 3 && !['pelayanan', 'perusahaan', 'dengan'].includes(keyword))
+    .sort((a, b) => b[1] - a[1])[0];
+
+  if (!repeatedEntry) {
+    return [];
+  }
+
+  const [keyword] = repeatedEntry;
+  const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const keywordRegex = new RegExp(`(?=${escapedKeyword}\\b)`, 'gi');
+  const leadingKeywordRegex = new RegExp(`^${escapedKeyword}`, 'i');
+  const trailingKeywordRegex = new RegExp(`\\s+${escapedKeyword}$`, 'i');
+
+  const items = text
+    .split(keywordRegex)
+    .map((segment) => segment.trim())
+    .filter(Boolean)
+    .map((segment) => {
+      const normalized = segment.replace(leadingKeywordRegex, (match) => match.charAt(0).toUpperCase() + match.slice(1).toLowerCase());
+      const ensuredPrefix = leadingKeywordRegex.test(segment)
+        ? normalized
+        : `${keyword.charAt(0).toUpperCase() + keyword.slice(1)} ${segment}`;
+
+      return sanitizeListItem(ensuredPrefix.replace(trailingKeywordRegex, ''));
+    })
+    .filter(Boolean);
+
+  return items.length >= 3 ? [...new Set(items)] : [];
+};
+
 const formatAboutContent = (aboutText) => {
   if (!aboutText || typeof aboutText !== 'string') {
     return DEFAULT_ABOUT_CONTENT;
@@ -47,14 +100,22 @@ const formatAboutContent = (aboutText) => {
 
     if (services.length === 0) {
       const splitted = serviceText
-        .split(/(?:\r?\n|,)/)
-        .map((item) => item.trim())
+        .split(/(?:\r?\n|,|;|\u2022|•|\s+-\s+)/)
+        .map(sanitizeListItem)
         .filter(Boolean);
 
       if (splitted.length > 1) {
         services = splitted;
       } else if (splitted.length === 1) {
-        extraDescription = splitted[0];
+        const keywordItems = extractRepeatedKeywordItems(splitted[0]);
+        if (keywordItems.length > 0) {
+          services = keywordItems;
+          const firstItemIndex = splitted[0].indexOf(keywordItems[0]);
+          const descriptionCandidate = firstItemIndex > 0 ? splitted[0].slice(0, firstItemIndex).trim() : '';
+          extraDescription = descriptionCandidate || (firstItemIndex === -1 ? splitted[0] : '');
+        } else {
+          extraDescription = splitted[0];
+        }
       }
     }
   }
