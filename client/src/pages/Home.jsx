@@ -4,25 +4,49 @@ import axios from 'axios';
 
 const Home = () => {
   const [profile, setProfile] = useState(null);
+  const [backgroundImage, setBackgroundImage] = useState('');
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchHomeData = async () => {
       try {
-        const { data } = await axios.get('/api/company-profiles');
-        if (Array.isArray(data) && data.length > 0) {
-          setProfile(data[0]);
+        const [profileResponse, galleryResponse] = await Promise.all([
+          axios.get('/api/company-profiles'),
+          axios.get('/api/gallery')
+        ]);
+
+        const profileData = profileResponse.data;
+        if (Array.isArray(profileData) && profileData.length > 0) {
+          setProfile(profileData[0]);
+        }
+
+        const galleryItems = galleryResponse.data;
+        if (Array.isArray(galleryItems)) {
+          const firstImage = galleryItems.find((item) => item.imageUrl)?.imageUrl;
+          if (firstImage) {
+            setBackgroundImage(firstImage);
+          }
         }
       } catch (error) {
-        console.error('Failed to fetch company profile', error);
+        console.error('Failed to fetch home data', error);
       }
     };
 
-    fetchProfile();
+    fetchHomeData();
   }, []);
 
   return (
     <main>
-      <section className="hero section hero--home">
+      <section
+        className="hero section hero--home"
+        style={
+          backgroundImage
+            ? {
+                '--hero-background-image': `url(${backgroundImage})`,
+                '--hero-background-opacity': 0.45
+              }
+            : undefined
+        }
+      >
         <div className="container hero__grid">
           <div className="hero__content">
             <span className="hero__eyebrow">{profile?.companyName || 'CV. Jaya Kencana'}</span>
@@ -83,7 +107,6 @@ const Home = () => {
             {profile?.heroImage && (
               <div className="hero__logo-card">
                 <img src={profile.heroImage} alt="Logo CV. Jaya Kencana" />
-                <p>Logo resmi perusahaan</p>
               </div>
             )}
             <div className="hero__highlights">
