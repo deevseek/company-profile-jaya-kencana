@@ -49,7 +49,14 @@ const Portfolio = () => {
                         <img
                           src={project.imageUrl}
                           alt={project.title}
-                          style={{ borderRadius: '12px', height: '180px', objectFit: 'cover' }}
+                          style={{
+                            borderRadius: '12px',
+                            width: '100%',
+                            height: 'auto',
+                            maxHeight: '200px',
+                            objectFit: 'contain',
+                            backgroundColor: '#f8fafc'
+                          }}
                         />
                       )}
                       <h3>{project.title}</h3>
