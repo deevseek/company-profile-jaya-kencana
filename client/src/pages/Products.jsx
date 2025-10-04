@@ -43,7 +43,7 @@ const Products = () => {
         <h1 className="section-title">Produk Kami</h1>
         <div className="card-grid">
           {products.map((product) => {
-            const whatsapp = getWhatsAppDetails(product.price);
+            const whatsapp = getWhatsAppDetails(product.contactNumber);
 
             return (
               <div key={product.id} className="card">

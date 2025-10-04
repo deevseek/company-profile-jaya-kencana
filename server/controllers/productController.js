@@ -1,5 +1,14 @@
 const { Product } = require('../models');
 
+const sanitizeContactNumber = (value) => {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  const digits = String(value).replace(/\D/g, '');
+  return digits.length > 0 ? digits : null;
+};
+
 exports.getProducts = async (req, res) => {
   try {
     const products = await Product.findAll();
@@ -25,7 +34,16 @@ exports.getProduct = async (req, res) => {
 
 exports.createProduct = async (req, res) => {
   try {
-    const data = req.body;
+    const data = { ...req.body };
+    if (!Object.prototype.hasOwnProperty.call(data, 'contactNumber') &&
+        Object.prototype.hasOwnProperty.call(data, 'price')) {
+      data.contactNumber = data.price;
+      delete data.price;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(data, 'contactNumber')) {
+      data.contactNumber = sanitizeContactNumber(data.contactNumber);
+    }
     if (req.file) {
       data.imageUrl = `/uploads/${req.file.filename}`;
     }
@@ -44,7 +62,16 @@ exports.updateProduct = async (req, res) => {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const data = req.body;
+    const data = { ...req.body };
+    if (!Object.prototype.hasOwnProperty.call(data, 'contactNumber') &&
+        Object.prototype.hasOwnProperty.call(data, 'price')) {
+      data.contactNumber = data.price;
+      delete data.price;
+    }
+
+    if (Object.prototype.hasOwnProperty.call(data, 'contactNumber')) {
+      data.contactNumber = sanitizeContactNumber(data.contactNumber);
+    }
     if (req.file) {
       data.imageUrl = `/uploads/${req.file.filename}`;
     }

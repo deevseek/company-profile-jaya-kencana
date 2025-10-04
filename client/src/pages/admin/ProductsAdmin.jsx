@@ -56,7 +56,7 @@ const ProductsAdmin = ({ token }) => {
       const formData = new FormData();
       formData.append('name', form.name);
       formData.append('description', form.description);
-      formData.append('price', form.contactNumber);
+      formData.append('contactNumber', form.contactNumber);
       if (image) {
         formData.append('image', image);
       }
@@ -90,7 +90,8 @@ const ProductsAdmin = ({ token }) => {
     setForm({
       name: product.name || '',
       description: product.description || '',
-      contactNumber: (product.price && String(product.price).replace(/\D/g, '')) || ''
+      contactNumber:
+        (product.contactNumber && String(product.contactNumber).replace(/\D/g, '')) || ''
     });
     setEditingId(product.id);
     setImage(null);
@@ -148,7 +149,7 @@ const ProductsAdmin = ({ token }) => {
         <h2>Daftar Produk</h2>
         <div className="card-grid">
           {products.map((product) => {
-            const whatsapp = getWhatsAppDetails(product.price);
+            const whatsapp = getWhatsAppDetails(product.contactNumber);
 
             return (
               <div key={product.id} className="card" style={{ boxShadow: 'none', border: '1px solid #e5e7eb' }}>
