@@ -188,21 +188,64 @@ button {
   gap: 1.5rem;
 }
 
-.hero__logo-card {
+.hero__gallery {
   background: rgba(15, 23, 42, 0.4);
   border-radius: 24px;
-  padding: 2.25rem;
+  padding: 1.75rem;
   display: grid;
-  gap: 0.75rem;
-  justify-items: center;
+  gap: 1rem;
   border: 1px solid rgba(148, 163, 184, 0.25);
-  box-shadow: 0 18px 40px rgba(8, 47, 73, 0.3);
+  box-shadow: 0 18px 40px rgba(8, 47, 73, 0.28);
 }
 
-.hero__logo-card img {
-  width: min(320px, 85%);
-  object-fit: contain;
-  filter: drop-shadow(0 20px 30px rgba(8, 47, 73, 0.4));
+.hero__gallery-frame {
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: rgba(15, 23, 42, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero__gallery-frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.hero__gallery:hover .hero__gallery-frame img {
+  transform: scale(1.02);
+}
+
+.hero__gallery-caption {
+  margin: 0;
+  font-weight: 600;
+  color: #e0f2fe;
+  text-align: center;
+}
+
+.hero__gallery-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.hero__gallery-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  border: none;
+  background: rgba(148, 163, 184, 0.4);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.hero__gallery-dot--active {
+  background: #38bdf8;
+  transform: scale(1.2);
 }
 
 .hero__highlights {
@@ -521,7 +564,7 @@ form {
     justify-items: center;
   }
 
-  .hero__logo-card,
+  .hero__gallery,
   .hero__highlights {
     width: min(100%, 320px);
   }
@@ -686,7 +729,7 @@ form {
     gap: 0.75rem;
   }
 
-  .hero__logo-card {
+  .hero__gallery {
     padding: 1.25rem;
   }
 
