@@ -157,7 +157,14 @@ const ProductsAdmin = ({ token }) => {
                   <img
                     src={product.imageUrl}
                     alt={product.name}
-                    style={{ borderRadius: '12px', height: '160px', objectFit: 'cover' }}
+                    style={{
+                      borderRadius: '12px',
+                      width: '100%',
+                      height: 'auto',
+                      maxHeight: '200px',
+                      objectFit: 'contain',
+                      backgroundColor: '#f8fafc'
+                    }}
                   />
                 )}
                 <h3>{product.name}</h3>

@@ -117,7 +117,14 @@ const GalleryAdmin = ({ token }) => {
                 <img
                   src={item.imageUrl}
                   alt={item.title}
-                  style={{ borderRadius: '12px', height: '160px', objectFit: 'cover' }}
+                  style={{
+                    borderRadius: '12px',
+                    width: '100%',
+                    height: 'auto',
+                    maxHeight: '200px',
+                    objectFit: 'contain',
+                    backgroundColor: '#f8fafc'
+                  }}
                 />
               )}
               <h3>{item.title}</h3>
