@@ -18,7 +18,7 @@ const Product = sequelize.define('Product', {
   contactNumber: {
     type: DataTypes.STRING(32),
     allowNull: true,
-    field: 'price',
+    //field: 'price',//
     get() {
       const rawValue = this.getDataValue('contactNumber');
       return rawValue == null ? null : String(rawValue);
