@@ -5,6 +5,8 @@ import axios from 'axios';
 const Home = () => {
   const [profile, setProfile] = useState(null);
   const [backgroundImage, setBackgroundImage] = useState('');
+  const [galleryImages, setGalleryImages] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -21,9 +23,17 @@ const Home = () => {
 
         const galleryItems = galleryResponse.data;
         if (Array.isArray(galleryItems)) {
-          const firstImage = galleryItems.find((item) => item.imageUrl)?.imageUrl;
-          if (firstImage) {
-            setBackgroundImage(firstImage);
+          const formattedImages = galleryItems
+            .filter((item) => item.imageUrl)
+            .map((item, index) => ({
+              id: item.id ?? index,
+              url: item.imageUrl,
+              title: item.title || `Dokumentasi Proyek ${index + 1}`
+            }));
+
+          if (formattedImages.length > 0) {
+            setGalleryImages(formattedImages);
+            setBackgroundImage(formattedImages[0].url);
           }
         }
       } catch (error) {
@@ -33,6 +43,22 @@ const Home = () => {
 
     fetchHomeData();
   }, []);
+
+  useEffect(() => {
+    if (galleryImages.length < 2) {
+      return undefined;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % galleryImages.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [galleryImages]);
+
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [galleryImages.length]);
 
   return (
     <main>
@@ -104,9 +130,46 @@ const Home = () => {
             )}
           </div>
           <div className="hero__visual">
-            {profile?.heroImage && (
-              <div className="hero__logo-card">
-                <img src={profile.heroImage} alt="Logo CV. Jaya Kencana" />
+            {(galleryImages.length > 0 || profile?.heroImage) && (
+              <div className="hero__gallery" role="group" aria-label="Galeri proyek terbaru">
+                <div className="hero__gallery-frame">
+                  <img
+                    src={
+                      galleryImages.length > 0
+                        ? galleryImages[currentSlide]?.url
+                        : profile?.heroImage
+                    }
+                    alt={
+                      galleryImages.length > 0
+                        ? galleryImages[currentSlide]?.title
+                        : 'Dokumentasi proyek CV. Jaya Kencana'
+                    }
+                  />
+                </div>
+                {(galleryImages.length > 0 && galleryImages[currentSlide]?.title) ||
+                profile?.companyName ? (
+                  <p className="hero__gallery-caption">
+                    {galleryImages.length > 0
+                      ? galleryImages[currentSlide]?.title
+                      : `Profil ${profile?.companyName || 'CV. Jaya Kencana'}`}
+                  </p>
+                ) : null}
+                {galleryImages.length > 1 && (
+                  <div className="hero__gallery-dots" role="tablist" aria-label="Pilih foto galeri">
+                    {galleryImages.map((image, index) => (
+                      <button
+                        key={image.id || index}
+                        type="button"
+                        className={`hero__gallery-dot${
+                          index === currentSlide ? ' hero__gallery-dot--active' : ''
+                        }`}
+                        onClick={() => setCurrentSlide(index)}
+                        aria-label={`Lihat foto ${index + 1}`}
+                        aria-selected={index === currentSlide}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             <div className="hero__highlights">
