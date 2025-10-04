@@ -6,7 +6,7 @@ const initialState = { title: '', description: '' };
 const GalleryAdmin = ({ token }) => {
   const [items, setItems] = useState([]);
   const [form, setForm] = useState(initialState);
-  const [image, setImage] = useState(null);
+  const [images, setImages] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [status, setStatus] = useState(null);
 
@@ -32,29 +32,55 @@ const GalleryAdmin = ({ token }) => {
     event.preventDefault();
     setStatus(null);
     try {
-      const formData = new FormData();
-      Object.entries(form).forEach(([key, value]) => formData.append(key, value));
-      if (image) {
-        formData.append('image', image);
-      }
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'multipart/form-data'
-        }
-      };
-
       if (editingId) {
+        const formData = new FormData();
+        Object.entries(form).forEach(([key, value]) => formData.append(key, value));
+        if (images[0]) {
+          formData.append('image', images[0]);
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        };
+
         await axios.put(`/api/gallery/${editingId}`, formData, config);
         setStatus({ type: 'success', message: 'Item galeri berhasil diperbarui.' });
       } else {
-        await axios.post('/api/gallery', formData, config);
-        setStatus({ type: 'success', message: 'Item galeri berhasil ditambahkan.' });
+        if (images.length === 0) {
+          setStatus({ type: 'error', message: 'Pilih minimal satu foto untuk diunggah.' });
+          return;
+        }
+
+        const config = {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'multipart/form-data'
+          }
+        };
+
+        await Promise.all(
+          images.map((file) => {
+            const formData = new FormData();
+            Object.entries(form).forEach(([key, value]) => formData.append(key, value));
+            formData.append('image', file);
+            return axios.post('/api/gallery', formData, config);
+          })
+        );
+
+        setStatus({
+          type: 'success',
+          message:
+            images.length > 1
+              ? `${images.length} foto galeri berhasil ditambahkan.`
+              : 'Item galeri berhasil ditambahkan.'
+        });
       }
 
       setForm(initialState);
-      setImage(null);
+      setImages([]);
       setEditingId(null);
       fetchGallery();
     } catch (error) {
@@ -66,7 +92,7 @@ const GalleryAdmin = ({ token }) => {
   const handleEdit = (item) => {
     setForm({ title: item.title || '', description: item.description || '' });
     setEditingId(item.id);
-    setImage(null);
+    setImages([]);
     setStatus(null);
   };
 
@@ -99,7 +125,20 @@ const GalleryAdmin = ({ token }) => {
           </div>
           <div>
             <label>Foto</label>
-            <input type="file" accept="image/*" onChange={(e) => setImage(e.target.files[0])} />
+            <input
+              type="file"
+              accept="image/*"
+              multiple={!editingId}
+              onChange={(event) => {
+                const files = Array.from(event.target.files || []);
+                setImages(editingId ? files.slice(0, 1) : files);
+              }}
+            />
+            {!editingId && images.length > 0 && (
+              <p style={{ marginTop: '0.5rem', fontSize: '0.875rem', color: '#475569' }}>
+                {images.length} file dipilih.
+              </p>
+            )}
           </div>
           <button className="primary-button" type="submit">
             {editingId ? 'Perbarui' : 'Tambah'}
